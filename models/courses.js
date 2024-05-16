@@ -27,7 +27,7 @@ var coursesSchema = new mongoose.Schema({
         },
         marks: {
           type: Number,
-          ref: "Student",
+          // default: 0,
         },
       },
     ],
