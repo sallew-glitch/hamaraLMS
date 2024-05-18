@@ -11,6 +11,23 @@ router.get("/", function (req, res, next) {
 });
 
 
+router.delete('/courses/:cid/unenroll-student/:sid', async (req, res) => {
+  try {
+    const { cid, sid } = req.params;
+
+    const course = await Course.findById(cid);
+    if (!course) {
+      return res.status(404).send('Course not found');
+    }
+
+    course.students.pull(sid);
+    await course.save();
+
+    res.status(200).send('Student unenrolled successfully');
+  } catch (error) {
+    res.status(500).send('Server error');
+  }
+
 router.put("/:id", async (req, res) => {
   try {
     const courseId = req.params.id;
