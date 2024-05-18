@@ -12,8 +12,6 @@ var adminRouter = require("./routes/admin");
 var headRouter = require("./routes/head");
 var coursesRouter = require("./routes/courses");
 
-// CHUTIYEEE, TERI GAND MARUN
-
 var app = express();
 mongoose.connect("mongodb://0.0.0.0:27017/lms").then(
   (db) => {
