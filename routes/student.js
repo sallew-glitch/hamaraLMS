@@ -1,5 +1,5 @@
-var express = require("express");
-var router = express.Router();
+const express = require("express");
+const router = express.Router();
 const Student = require("../models/student");
 const Class = require("../models/class");
 const Course = require("../models/courses");
@@ -51,7 +51,10 @@ router.get("/grades/:sid", async (req, res) => {
   const { sid } = req.params;
 
   try {
-    const courses = await Course.find({ "students.sid": sid }, "name students.$");
+    const courses = await Course.find(
+      { "students.sid": sid },
+      "name students.$"
+    );
 
     const grades = courses.map((course) => {
       const studentData = course.students.find(
