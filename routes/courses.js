@@ -1,16 +1,16 @@
-
 const express = require("express");
 const mongoose = require("mongoose");
 const Course = require("../models/courses.js"); // Adjust the path as necessary
 const Student = require("../models/student"); // Adjust the path as necessary
 const { addCourse } = require("../Controllers/COurses.js");
 const router = express.Router();
-//GET Routes
+
+// GET Route for courses
 router.get("/", function (req, res, next) {
   res.send("Courses");
 });
 
-
+// DELETE Route to unenroll a student from a course
 router.delete('/courses/:cid/unenroll-student/:sid', async (req, res) => {
   try {
     const { cid, sid } = req.params;
@@ -27,11 +27,13 @@ router.delete('/courses/:cid/unenroll-student/:sid', async (req, res) => {
   } catch (error) {
     res.status(500).send('Server error');
   }
+});
 
+// PUT Route to update a course
 router.put("/:id", async (req, res) => {
   try {
     const courseId = req.params.id;
-    const updates = req.body; 
+    const updates = req.body;
 
     const updatedCourse = await Course.findByIdAndUpdate(courseId, updates, { new: true });
 
@@ -44,7 +46,8 @@ router.put("/:id", async (req, res) => {
     console.error("Error updating course:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
-// POST /head/addcourse
+});
+
 router.post("/head/addcourse", async (req, res) => {
   addCourse(req, res);
 });
