@@ -17,6 +17,7 @@ mongoose.connect('mongodb://0.0.0.0:27017/lms')
 .then((db)=>{
   console.log("Database Connected Successfully");
 },(err)=>{return err});
+app.listen(500);
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
