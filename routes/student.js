@@ -1,5 +1,8 @@
 var express=require("express");
 var router= express.Router();
+const Student = require("../models/student");
+const Class = require("../models/class");
+const Student = require("../models/student");
 //GET Routes
 router.get('/',function(req,res,next){
     res.send("Student Dashboard");
