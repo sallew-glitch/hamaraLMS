@@ -3,6 +3,7 @@ var router= express.Router();
 const Student = require("../models/student");
 const Class = require("../models/class");
 const Student = require("../models/student");
+const Course = require("../models/courses");
 //GET Routes
 router.get('/',function(req,res,next){
     res.send("Student Dashboard");
@@ -46,6 +47,27 @@ router.get("/teachers/:sid", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server Error" });
+  }
+});
+
+router.get('/grades/:sid', async (req, res) => {
+  const { sid } = req.params;
+
+  try {
+    const courses = await Course.find({ 'students.sid': sid }, 'name students.$');
+    
+    const grades = courses.map(course => {
+      const studentData = course.students.find(student => student.sid.toString() === sid);
+      return {
+        courseName: course.name,
+        marks: studentData.marks,
+      };
+    });
+
+    res.json({ grades });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal Server Error');
   }
 });
 
