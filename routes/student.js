@@ -33,7 +33,7 @@ router.get("/student/teachers/:id", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-
+// POST /withdrawcourse/:cid
 router.delete("/withdrawcourse/:cid", async (req, res) => {
   withdrawCourse(req, res);
 });
