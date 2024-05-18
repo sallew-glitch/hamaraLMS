@@ -28,6 +28,3 @@ npm start
 ## Support
 
 For support, email muhammadammar7747@gmail.com
-
-## License
-This project is licensed under the MIT License.
