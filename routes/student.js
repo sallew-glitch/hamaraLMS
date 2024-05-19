@@ -13,36 +13,29 @@ router.get("/", function (req, res, next) {
 // Route to get teachers for a student
 router.get("/teachers/:sid", async (req, res) => {
   try {
-    const { sid } = req.params;
+    const studentId = req.params.sid;
 
-    const student = await Student.findById(sid).populate("classes.teacher");
-
-    if (!student) {
-      return res.status(404).json({ message: "Student not found" });
-    }
-
-    const classIds = student.classes.map((c) => c.cid);
-
-    const classes = await Class.find({ _id: { $in: classIds } }).populate(
+    // Find all classes that the student is enrolled in
+    const classes = await Class.find({ "students.sid": studentId }).populate(
       "teachers.tid"
     );
 
-    let teachers = [];
-    classes.forEach((c) => {
-      c.teachers.forEach((t) => {
-        teachers.push(t.tid);
+    // Extract the unique teachers from the classes
+    const teachers = [];
+    const teacherIds = new Set();
+
+    classes.forEach((classItem) => {
+      classItem.teachers.forEach((teacher) => {
+        if (!teacherIds.has(teacher.tid._id.toString())) {
+          teacherIds.add(teacher.tid._id.toString());
+          teachers.push(teacher.tid);
+        }
       });
     });
 
-    teachers = teachers.filter(
-      (teacher, index, self) =>
-        index === self.findIndex((t) => t._id.equals(teacher._id))
-    );
-
-    res.json({ teachers });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server Error" });
+    res.json(teachers);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 });
 
