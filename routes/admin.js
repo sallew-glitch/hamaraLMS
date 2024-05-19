@@ -53,6 +53,7 @@ router.get("/teachers", function (req, res, next) {
       }
     );
 });
+
 router.get("/teachers/:id", function (req, res, next) {
   Teacher.find({ _id: req.params.id })
     .exec()
@@ -286,6 +287,54 @@ router.delete('/removeteacher/:tid/:cid', async (req, res) => {
     console.error(error);    }
 });
 
+
+
+// removing all students from a specific class
+router.put("/removestudents/:cid",function(req,res,next){
+  Class.findOneAndUpdate(
+    { _id: req.params.cid },
+    {
+      $set: {
+        students: []
+      }
+    },
+    { new: true, upsert: false }
+  ).then(
+    (result) => {
+      res.statusCode = 200;
+      res.json(result);
+    },
+    (err) => {
+      return err;
+    }
+  );
+})
+
+
+// remove a specific student from aclass
+
+router.put("/removestudent/:sid/:cid",function(req,res,next){
+  Class.findOneAndUpdate(
+    { _id: req.params.cid },
+    {
+      $pull: {
+        students: {
+          sid: req.params.sid
+        }
+      }
+    },
+    { new: true, upsert: false }
+  ).then(
+    (result) => {
+      res.statusCode = 200;
+      res.json(result);
+    },
+    (err) => {
+      return err;
+    }
+  );
+
+})
 
 
 module.exports = router;
