@@ -55,5 +55,24 @@ router.put("/removeteacher/:tid", async (req, res, next) => {
     res.status(500).json({message: error.message});
   }
 })
+;
+
+// GET Route to get a course taught by a specific teacher
+router.get("/getcourse/:tid", async (req, res, next) => {
+  try {
+    const { tid } = req.params;
+    const courses = await Course.find({ "teachers.tid": tid }).populate('teachers.tid');
+
+    if (!courses || courses.length === 0) {
+      return res.status(404).json({ message: "No courses found for this teacher" });
+    }
+
+    res.status(200).json(courses);
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 
 module.exports = router;
