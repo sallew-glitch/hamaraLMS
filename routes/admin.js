@@ -3,6 +3,8 @@ const router = express.Router();
 const Class = require("../models/class");
 const Teacher = require("../models/teacher");
 const Student = require("../models/student");
+
+const Admin = require("../models/admin");
 //GET Routes
 router.get("/", function (req, res, next) {
   res.send("Admin Dashboard");
@@ -91,6 +93,18 @@ router.get("/students/:id", function (req, res, next) {
     );
 });
 
+router.get("/admins", function(req,res, next){
+  Admin.find() .exec()
+    .then(
+      (admin)=>{
+        res.status(200).json(admin)
+      },
+      (err)=>{
+        return err;
+      }
+  )
+});
+
 //POST Routes
 
 router.post("/addteacher", function (req, res, next) {
@@ -127,6 +141,19 @@ router.post("/addclass", function (req, res, next) {
   );
 });
 
+// add admin 
+router.post("/add", async(req, res, next)=>{
+try{
+  const {name} = req.body;
+  const newAdmin = new Admin({name});
+  await newAdmin.save();
+  res.status(201).json(newAdmin)
+}
+catch(err){
+  res.status(500).json({message: err.message})
+}
+});
+  
 //PUT Routes
 
 router.put("/assignteacher/:cid/:tid", function (req, res, next) {
@@ -165,6 +192,26 @@ router.put("/assignstudent/:cid/:sid", function (req, res, next) {
   );
 });
 
+// update admin profile
+router.put("/updateprofile/:aid", async (req, res, next) => {
+  try {
+    const { name } = req.body;
+    const admin = await Admin.findByIdAndUpdate(
+      {_id: req.params.aid},
+      { name: name },
+      { new: true }
+    );
+
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+
+    res.status(200).json(admin);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 //Delete Routes
 
 router.delete("/delclass/:cid", function (req, res, next) {
@@ -201,5 +248,7 @@ router.delete("/delteacher/:tid", function (req, res, next) {
     }
   );
 });
+
+
 
 module.exports = router;
