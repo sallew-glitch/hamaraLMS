@@ -256,6 +256,36 @@ router.delete("/delteacher/:tid", function (req, res, next) {
   );
 });
 
+//062,086
+ //Remove All teachers form a class
+ router.delete('/removeteachers/:cid', async (req, res) => {
+  try {
+    const { cid } = req.params;
+
+    const classObj = await Class.findById(cid);
+      classObj.teachers = [];
+    await classObj.save();
+    res.status(200).send('All teachers removed from class');
+    console.log("All teachers removed from class");
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+// Remove specific teacher from a class
+router.delete('/removeteacher/:tid/:cid', async (req, res) => {
+  try {
+    const { tid, cid } = req.params;
+
+    const classObj = await Class.findById(cid);
+    classObj.teachers = classObj.teachers.filter(t => t.tid.toString() !== tid);  
+    await classObj.save();  
+    res.status(200).send('Teacher removed from class');
+    console.log("Teacher removed from class");
+  } catch (error) {
+    console.error(error);    }
+});
+
 
 
 module.exports = router;
