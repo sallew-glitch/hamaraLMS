@@ -1,8 +1,8 @@
-var express=require("express");
-var router= express.Router();
+const express = require("express");
+const router = express.Router();
 //GET Routes
-router.get('/',function(req,res,next){
-    res.send("Head Dashboard");
+router.get("/", function (req, res, next) {
+  res.send("Head Dashboard");
 });
 router.post('/head/assigncourse/:cid/:tid', async (req, res) => {
   try {
@@ -36,6 +36,4 @@ router.post('/head/assigncourse/:cid/:tid', async (req, res) => {
   }
 });
 
-
-
-module.exports=router;
+module.exports = router;

@@ -1,10 +1,79 @@
-var express=require("express");
-var router= express.Router();
-//GET Routes
-router.get('/',function(req,res,next){
-    res.send("Student Dashboard");
+const express = require("express");
+const router = express.Router();
+const Student = require("../models/student");
+const Class = require("../models/class");
+const Course = require("../models/courses");
+const { withdrawCourse, enrollCourse } = require("../Controllers/student");
+
+// GET Routes
+router.get("/", function (req, res, next) {
+  res.send("Student Dashboard");
 });
 
+// Route to get teachers for a student
+router.get("/teachers/:sid", async (req, res) => {
+  try {
+    const studentId = req.params.sid;
 
+    // Find all classes that the student is enrolled in
+    const classes = await Class.find({ "students.sid": studentId }).populate(
+      "teachers.tid"
+    );
 
-module.exports=router;
+    // Extract the unique teachers from the classes
+    const teachers = [];
+    const teacherIds = new Set();
+
+    classes.forEach((classItem) => {
+      classItem.teachers.forEach((teacher) => {
+        if (!teacherIds.has(teacher.tid._id.toString())) {
+          teacherIds.add(teacher.tid._id.toString());
+          teachers.push(teacher.tid);
+        }
+      });
+    });
+
+    res.json(teachers);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Route to get grades for a student
+router.get("/grades/:sid", async (req, res) => {
+  const { sid } = req.params;
+
+  try {
+    const courses = await Course.find(
+      { "students.sid": sid },
+      "name students.$"
+    );
+
+    const grades = courses.map((course) => {
+      const studentData = course.students.find(
+        (student) => student.sid.toString() === sid
+      );
+      return {
+        courseName: course.name,
+        marks: studentData.marks,
+      };
+    });
+
+    res.json({ grades });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+// Route to withdraw from a course
+router.delete("/withdrawcourse/:cid", async (req, res) => {
+  withdrawCourse(req, res);
+});
+
+// Route to enroll in a course
+router.post("/enrollcourse/:cid", async (req, res) => {
+  enrollCourse(req, res);
+});
+
+module.exports = router;
