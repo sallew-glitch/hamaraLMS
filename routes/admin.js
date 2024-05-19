@@ -132,7 +132,14 @@ router.post("/addclass", function (req, res, next) {
 router.put("/assignteacher/:cid/:tid", function (req, res, next) {
   Class.findOneAndUpdate(
     { _id: req.params.cid },
-    { teacher: req.params.tid }
+    {
+      $push: {
+        teachers: {
+          tid: req.params.tid,
+        },
+      },
+    },
+    { new: true, upsert: false }
   ).then(
     (result) => {
       res.statusCode = 200;

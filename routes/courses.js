@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const Course = require("../models/courses.js"); // Adjust the path as necessary
 const Student = require("../models/student"); // Adjust the path as necessary
-const { addCourse } = require("../Controllers/COurses.js");
+const { addCourse } = require("../Controllers/courses.js");
 const router = express.Router();
 
 // GET Route for courses
@@ -11,21 +11,26 @@ router.get("/", function (req, res, next) {
 });
 
 // DELETE Route to unenroll a student from a course
-router.delete('/courses/:cid/unenroll-student/:sid', async (req, res) => {
+router.delete("/courses/:cid/unenroll-student/:sid", async (req, res) => {
   try {
     const { cid, sid } = req.params;
 
     const course = await Course.findById(cid);
     if (!course) {
-      return res.status(404).send('Course not found');
+      return res.status(404).send("Course not found");
     }
 
-    course.students.pull(sid);
+    // Pull the student object with the specific sid
+    course.students = course.students.filter(
+      (student) => student.sid.toString() !== sid
+    );
+
     await course.save();
 
-    res.status(200).send('Student unenrolled successfully');
+    res.status(200).send("Student unenrolled successfully");
   } catch (error) {
-    res.status(500).send('Server error');
+    console.error(error);
+    res.status(500).send("Server error");
   }
 });
 

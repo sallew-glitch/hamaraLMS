@@ -42,7 +42,10 @@ const enrollCourse = async (req, res) => {
         .send({ error: "Student already enrolled in this course" });
     }
 
-    course.students.push({ sid: mongoose.Types.ObjectId(studentId), marks: 0 });
+    course.students.push({
+      sid: new mongoose.Types.ObjectId(studentId),
+      marks: 0,
+    });
     await course.save();
 
     res.send({ message: "Successfully enrolled in the course" });
@@ -50,5 +53,6 @@ const enrollCourse = async (req, res) => {
     res.status(400).send({ error: error.message });
   }
 };
+
 
 module.exports = { withdrawCourse, enrollCourse };
