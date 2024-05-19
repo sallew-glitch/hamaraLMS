@@ -76,4 +76,24 @@ router.post("/enrollcourse/:cid", async (req, res) => {
   enrollCourse(req, res);
 });
 
+//Get student enrolled in particular course
+router.get('/getStudentEnrolled', function(req, res, next){
+    const courseId = req.body.courseId;
+    Course.findById(courseId).populate('students.sid')
+        .then((course)=>{
+            if(!course){
+                res.statusCode=404;
+                res.json({message:"Course not found"});
+            }
+            else{
+                res.statusCode=200;
+                res.json(course.students);
+            }
+        }, (err)=>{
+            return (err);
+        })
+});
+
+module.exports=router;
+
 module.exports = router;
