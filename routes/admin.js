@@ -56,6 +56,7 @@ router.get("/teachers", function (req, res, next) {
       }
     );
 });
+
 router.get("/teachers/:id", function (req, res, next) {
   Teacher.find({ _id: req.params.id })
     .exec()
@@ -224,6 +225,26 @@ router.put("/updateprofile/:aid", async (req, res, next) => {
   }
 });
 
+
+// PUT Route to update a student by registration number
+router.put("/updatestudent/:regno", async (req, res, next) => {
+  try {
+    const { regno } = req.params;
+    const updateData = req.body;
+    const student = await Student.findOneAndUpdate({ rollno: regno }, updateData, { new: true });
+
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    res.status(200).json({ message: "Student updated successfully", student });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
 //Delete Routes
 
 router.delete("/delclass/:cid", function (req, res, next) {
@@ -291,6 +312,55 @@ router.delete('/removeteacher/:tid/:cid', async (req, res) => {
     console.error(error);    }
 });
 
+
+
+
+// removing all students from a specific class
+router.put("/removestudents/:cid",function(req,res,next){
+  Class.findOneAndUpdate(
+    { _id: req.params.cid },
+    {
+      $set: {
+        students: []
+      }
+    },
+    { new: true, upsert: false }
+  ).then(
+    (result) => {
+      res.statusCode = 200;
+      res.json(result);
+    },
+    (err) => {
+      return err;
+    }
+  );
+})
+
+
+// remove a specific student from aclass
+
+router.put("/removestudent/:sid/:cid",function(req,res,next){
+  Class.findOneAndUpdate(
+    { _id: req.params.cid },
+    {
+      $pull: {
+        students: {
+          sid: req.params.sid
+        }
+      }
+    },
+    { new: true, upsert: false }
+  ).then(
+    (result) => {
+      res.statusCode = 200;
+      res.json(result);
+    },
+    (err) => {
+      return err;
+    }
+  );
+
+})
 
 
 module.exports = router;
