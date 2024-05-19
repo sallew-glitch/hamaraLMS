@@ -66,6 +66,30 @@ router.get("/grades/:sid", async (req, res) => {
   }
 });
 
+// Route to get a certain course's grades for a student
+router.get("/grades/:sid/:cid", async (req, res) => {
+  const { sid } = req.params;
+  const { cid } = req.params;
+
+  try {
+    const marksOfAllStds = await Course.findOne({"_id":cid.toString()});
+    const allStudents = marksOfAllStds.students;
+
+    marks = "Not found"
+
+    for(const student of allStudents){
+      if(student.sid == sid.toString())
+        marks = student.marks
+    }
+
+    res.json(marks);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 // Route to withdraw from a course
 router.delete("/withdrawcourse/:cid", async (req, res) => {
   withdrawCourse(req, res);
