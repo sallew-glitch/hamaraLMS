@@ -13,16 +13,18 @@ router.put('/head/assigncourse/:cid/:tid', async (req, res) => {
         return res.status(404).json({ message: 'Course not found' });
       }
   
+   
       if (course.department !== req.teacher.department) { 
         return res.status(400).json({ message: 'Teacher does not belong to the same department' });
       }
-  
+
 
       const teacher = await Teacher.findById(tid);
       if (!teacher) {
         return res.status(404).json({ message: 'Teacher not found' });
       }
   
+      
       const existingTeachers = course.teachers.map(t => t.tid.toString());
       if (!existingTeachers.includes(tid)) {
         course.teachers.push({ tid });
